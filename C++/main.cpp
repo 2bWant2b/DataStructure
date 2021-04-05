@@ -1,8 +1,5 @@
-#include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include <malloc.h>
-#include <stdbool.h>
-#include <stdlib.h>
 #define MaxSize 50
 typedef char ElemType;
 typedef struct
@@ -77,7 +74,7 @@ bool insertElem(SqList *L,int i,ElemType e){
     return true;
 }
 
-bool deleteElem(SqList *&L,int i,ElemType &e){
+bool deleteElem(SqList *L,int i,ElemType &e){
     int j;
     if (i<1 || i>L->length){
         return false;
@@ -91,7 +88,23 @@ bool deleteElem(SqList *&L,int i,ElemType &e){
     return true;
 }
 
+void deleteRepeatedElem(SqList *L){
+    int slow=0;
+    int fast=0;
+    int count=0;
+    for (;fast<L->length;fast++) {
+        if (L->data[fast + 1] > L->data[fast]) {
+            L->data[slow]=L->data[fast];
+            slow++;
+        } else{
+            count++;
+        }
+    }
+    L->length-=count;
+}
+
 int main() {
+    printf("-------------Basic questions 1(1)---------------\n");
     SqList *L;
     ElemType e;
     initList(L);
@@ -112,6 +125,56 @@ int main() {
     dispList(L);
     printf("%s\n",(isEmpty(L)?"yes":"no"));
     destroyList(L);
-    printf("%d\n",getListLength(L));
     printf("%s\n",(isEmpty(L)?"yes":"no"));
+    printf("-------------Basic questions 1(2)---------------\n");
+    SqList *N;
+    char a[5]={'q','w','e','r','d'};
+    createList(N, reinterpret_cast<ElemType *>(a), 5);
+    dispList(N);
+    printf("-------------Additional questions 1---------------\n");
+    SqList *M;
+    initList(M);
+    insertElem(M,1,'0');
+    insertElem(M,2,'0');
+    insertElem(M,3,'2');
+    insertElem(M,4,'4');
+    insertElem(M,5,'4');
+    insertElem(M,6,'4');
+    insertElem(M,7,'7');
+    insertElem(M,8,'7');
+    dispList(M);
+    deleteRepeatedElem(M);
+    dispList(M);
+    printf("%d\n",getListLength(M));
+    printf("-------------Additional questions 2(1&2)---------------\n");
+    int var1;
+    printf("var1 : %p\n", &var1  );
+    char var2[5];
+    for(int i=0; i<2; i++) {
+        printf("char_var2[%d] : %p\n", i, &var2[i]);
+    }
+    int var3[5];
+    for(int i=0; i<2; i++) {
+        printf("int_var3[%d] : %p\n", i, &var3[i]);
+    }
+    float var4[5];
+    for(int i=0; i<2; i++) {
+        printf("float_var4[%d] : %p\n", i, &var4[i]);
+    }
+    double var5[5];
+    for(int i=0; i<2; i++) {
+        printf("double_var5[%d] : %p\n", i, &var5[i]);
+    }
+    printf("-------------Additional questions 2(3)---------------\n");
+    struct player{
+        int number;
+        int age;
+    }team[3];
+    for (int i=0;i<3;i++){
+        printf("team_age : %p\n", i, &team[i].age);
+    }
+    for (int i=0;i<3;i++){
+        printf("team_number : %p\n", i, &team[i].number);
+    }
 }
+
