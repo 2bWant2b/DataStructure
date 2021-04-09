@@ -1,180 +1,228 @@
 #include <cstdio>
 #include <malloc.h>
-#define MaxSize 50
 typedef char ElemType;
-typedef struct
+typedef struct LNode
 {
-    ElemType data[MaxSize];
-    int length;
-} SqList;
+    ElemType data;
+    struct LNode *next;
+} LinkNode;
 
-void createList(SqList *&L,ElemType a[],int n){
-    L=(SqList * )malloc(sizeof (SqList));
-    for (int i=0;i<n;i++){
-        L->data[i]=a[i];
+void creatListF(LinkNode *&L,ElemType a[],int n){
+    LinkNode *s;
+    L=(LinkNode *)malloc(sizeof(LinkNode));
+    L->next=NULL;
+    for(int i=0;i<n;i++){
+        s=(LinkNode *)malloc(sizeof(LinkNode));
+        s->data=a[i];
+        s->next=L->next;
+        L->next=s;
     }
-    L->length=n;
 }
 
-void initList(SqList *&L){
-    L=(SqList*)malloc(sizeof(SqList));
-    L->length=0;
+void creatListR(LinkNode *&L,ElemType a[],int n){
+    LinkNode *s,*r;
+    L=(LinkNode *)malloc(sizeof(LinkNode));
+    L->next=NULL;
+    r=L;
+    for (int i = 0; i < n; i++)
+    {
+        s=(LinkNode *)malloc(sizeof(LinkNode));
+        s->data=a[i];
+        r->next=s;
+        r=s;
+    }
+    r->next=NULL;
 }
 
-void destroyList(SqList *&L){
-    free(L);
+void initList(LinkNode *&L){
+    L=(LinkNode *)malloc(sizeof(LinkNode));
+    L->next=NULL;
 }
 
-bool isEmpty(SqList *L){
-    return (L->length==0);
+void destroyList(LinkNode *&L){
+    LinkNode *pre=L,*cur=pre->next;
+    while (cur!=NULL)
+    {
+        free(pre);
+        pre=cur;
+        cur=pre->next;
+    }
+    free(pre);
 }
 
-int  getListLength(SqList *L){
-    return (L->length);
+bool isEmpty(LinkNode *L){
+    return(L->next==NULL);    
 }
 
-void dispList(SqList *L){
-    for (int i=0;i<L->length;i++){
-        printf("%c",L->data[i]);
+int getListLength(LinkNode *L){
+    int i=0;
+    LinkNode *p=L;
+    while (p->next!=NULL)
+    {
+        i++;
+        p=p->next;
+    }
+    return(i);
+}
+
+void dispList(LinkNode *L){
+    LinkNode *p=L->next;
+    while (p!=NULL)
+    {
+        printf("%c",p->data);
+        p=p->next;
     }
     printf("\n");
 }
 
-bool getElem(SqList *L,int i,ElemType &e){
-    if (i<1 || i>L->length){
-        return false;
+void dispList2(LinkNode *L){
+    LinkNode *p=L;
+    while (p!=NULL)
+    {
+        printf("%c",p->data);
+        p=p->next;
     }
-    e=L->data[i-1];
-    return true;
+    printf("\n");
 }
 
-int getLocateElem(SqList *L,ElemType e){
-    int i=0;
-    while (i<L->length&&L->data[i]!=e){
+bool getElemValue(LinkNode *L,int i,ElemType &e){
+    int j=0;
+    LinkNode *p=L;
+    if (i<0)return false;
+    while (j<i&&p!=NULL)
+    {
+        j++;
+        p=p->next;
+    }
+    if(p==NULL){
+        return false;
+    }else{
+        e=p->data;
+        return true;
+    }
+}
+
+int getElemNumber(LinkNode *L,ElemType e){
+    int i=1;
+    LinkNode *p=L->next;
+    while (p!=NULL&&p->data!=e)
+    {
+        p=p->next;
         i++;
     }
-    if (i>=L->length){
+    if(p==NULL){
         return 0;
-    } else{
-        return i+1;
+    }else{
+        return(i);
     }
 }
 
-bool insertElem(SqList *L,int i,ElemType e){
-    int j;
-    if(i<1 || i>L->length+1){
+bool insertElem(LinkNode *&L,int i,ElemType e){
+    int j=0;
+    LinkNode *p=L,*s;
+    if(i<=0)return false;
+    while (j<i-1&&p!=NULL)
+    {
+        j++;
+        p=p->next;
+    }
+    if(p==NULL){
         return false;
+    }else{
+        s=(LinkNode *)malloc(sizeof(LinkNode));
+        s->data=e;
+        s->next=p->next;
+        p->next=s;
+        return true;
     }
-    i--;
-    for (j=L->length;j>i;j--){
-        L->data[j]=L->data[j-1];
-    }
-    L->data[i]=e;
-    L->length++;
-    return true;
 }
 
-bool deleteElem(SqList *L,int i,ElemType &e){
-    int j;
-    if (i<1 || i>L->length){
+bool deleteElem(LinkNode *&L,int i,ElemType &e){
+    int j=0;
+    LinkNode *p=L,*q;
+    if(i<=0)return false;
+    while (j<i-1&&p!=NULL)
+    {
+        j++;
+        p=p->next;
+    }
+    if(p==NULL){
         return false;
-    }
-    i--;
-    e=L->data[i];
-    for (j=i; j < L->length-1; j++) {
-        L->data[j]=L->data[j+1];
-    }
-    L->length--;
-    return true;
-}
-
-void deleteRepeatedElem(SqList *L){
-    int slow=0;
-    int fast=0;
-    int count=0;
-    for (;fast<L->length;fast++) {
-        if (L->data[fast + 1] > L->data[fast]) {
-            L->data[slow]=L->data[fast];
-            slow++;
-        } else{
-            count++;
+    }else{
+        q=p->next;
+        if(q==NULL){
+            return false;
+        }else{
+            e=q->data;
+            p->next=q->next;
+            free(q);
+            return true;
         }
     }
-    L->length-=count;
+    
+}
+
+LinkNode* devideList(LinkNode *&L){
+    LinkNode *linkptr,*moveptr,*evenhead;
+    linkptr=L->next;
+    moveptr=L->next->next;
+    evenhead=moveptr;
+    while (moveptr!=NULL)
+    {
+        linkptr->next=linkptr->next->next;
+        linkptr=moveptr;
+        moveptr=moveptr->next;
+    }
+    return evenhead;
 }
 
 int main() {
-    printf("-------------Basic questions 1(1)---------------\n");
-    SqList *L;
+    LinkNode *list;
     ElemType e;
-    initList(L);
-    printf("%s\n",(isEmpty(L)?"yes":"no"));
-    insertElem(L,1,'a');
-    insertElem(L,2,'b');
-    insertElem(L,3,'c');
-    insertElem(L,4,'d');
-    insertElem(L,5,'e');
-    dispList(L);
-    printf("%d\n",getListLength(L));
-    getElem(L,3,e);
-    printf("%c\n",e);
-    printf("%d\n",getLocateElem(L,'a'));
-    insertElem(L,4,'f');
-    dispList(L);
-    deleteElem(L,3,e);
-    dispList(L);
-    printf("%s\n",(isEmpty(L)?"yes":"no"));
-    destroyList(L);
-    printf("%s\n",(isEmpty(L)?"yes":"no"));
-    printf("-------------Basic questions 1(2)---------------\n");
-    SqList *N;
-    char a[5]={'q','w','e','r','d'};
-    createList(N, reinterpret_cast<ElemType *>(a), 5);
-    dispList(N);
-    printf("-------------Additional questions 1---------------\n");
-    SqList *M;
-    initList(M);
-    insertElem(M,1,'0');
-    insertElem(M,2,'0');
-    insertElem(M,3,'2');
-    insertElem(M,4,'4');
-    insertElem(M,5,'4');
-    insertElem(M,6,'4');
-    insertElem(M,7,'7');
-    insertElem(M,8,'7');
-    dispList(M);
-    deleteRepeatedElem(M);
-    dispList(M);
-    printf("%d\n",getListLength(M));
-    printf("-------------Additional questions 2(1&2)---------------\n");
-    int var1;
-    printf("var1 : %p\n", &var1  );
-    char var2[5];
-    for(int i=0; i<2; i++) {
-        printf("char_var2[%d] : %p\n", i, &var2[i]);
-    }
-    int var3[5];
-    for(int i=0; i<2; i++) {
-        printf("int_var3[%d] : %p\n", i, &var3[i]);
-    }
-    float var4[5];
-    for(int i=0; i<2; i++) {
-        printf("float_var4[%d] : %p\n", i, &var4[i]);
-    }
-    double var5[5];
-    for(int i=0; i<2; i++) {
-        printf("double_var5[%d] : %p\n", i, &var5[i]);
-    }
-    printf("-------------Additional questions 2(3)---------------\n");
-    struct player{
-        int number;
-        int age;
-    }team[3];
-    for (int i=0;i<3;i++){
-        printf("team_age : %p\n", i, &team[i].age);
-    }
-    for (int i=0;i<3;i++){
-        printf("team_number : %p\n", i, &team[i].number);
-    }
+    initList(list);
+    insertElem(list,1,'a');
+    insertElem(list,2,'b');
+    insertElem(list,3,'c');
+    insertElem(list,4,'d');
+    insertElem(list,5,'e');
+    dispList(list);
+    printf("the length of list : %d\n",getListLength(list));
+    printf("list %s\n",(isEmpty(list)?"is empty":"is not empty"));
+    getElemValue(list,3,e);
+    printf("the third elem in list is : %c\n",e);
+    printf("a locates :%d\n",getElemNumber(list,'a'));
+    insertElem(list,4,'f');
+    dispList(list);
+    destroyList(list);
+    printf("-------------附加题1--------------\n"); 
+    LinkNode *Flist;
+    char a[5]={'q','w','e','r','t'};
+    LinkNode *Rlist;
+    creatListF(Flist,a,5);
+    dispList(Flist);
+    creatListR(Rlist,a,5);
+    dispList(Rlist);
+    printf("-------------附加题2--------------\n");
+    dispList2(devideList(Rlist));
+    dispList(Rlist);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
