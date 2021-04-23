@@ -1,73 +1,69 @@
 #include <cstdio>
 #include <malloc.h>
+#define MaxSize 100
 typedef int ElemType;
-typedef struct DNode
+typedef struct 
 {
-    ElemType data;
-    struct DNode *prior;
-    struct DNode *next;
-} DLinkNode;
+    ElemType data[MaxSize];
+    int top;
+} SqStack;
 
-// 头插法创建循环双链表
-void creatListF(DLinkNode *&L,ElemType a[],int n){
-    DLinkNode *s;
-    L=(DLinkNode *)malloc(sizeof(DLinkNode));
-    L->next=NULL;
-    for(int i=0;i<n;i++){
-        s=(DLinkNode *)malloc(sizeof(DLinkNode));
-        s->data=a[i];
-        s->next=L->next;
-        if(L->next!=NULL){
-            L->next->prior=s;
-        }
-        L->next=s;
-        s->prior=L;
-    }
-    while (s->next!=NULL)
-    {
-        s->next=s;
-    }
-    s->next=L;
-    L->prior=s;
+void initStack(SqStack*&s) {
+	s = (SqStack*)malloc(sizeof(SqStack));
+	s->top = -1;
 }
 
-// 尾插法创建循环双链表
-void creatListR(DLinkNode *&L,ElemType a[],int n){
-    DLinkNode *s,*r;
-    L=(DLinkNode *)malloc(sizeof(DLinkNode));
-    L->next=NULL;
-    r=L;
-    for (int i = 0; i < n; i++)
-    {
-        s=(DLinkNode *)malloc(sizeof(DLinkNode));
-        s->data=a[i];
-        r->next=s;
-        s->prior=r;
-        r=s;
-    }
-    r->next=L;
-    L->prior=r;
+void destoryStack(SqStack*&s) {
+	free(s);
 }
 
-void dispList(DLinkNode *L){
-    DLinkNode *p=L->next;
-    while (p!=NULL)
-    {
-        printf("%c",p->data);
-        p=p->next;
-    }
-    printf("\n");
+bool isEmpty(SqStack*s){
+	return(s->top == -1);
 }
 
-//void dispListRev(DLinkNode *L){
+bool push(SqStack*&s, ElemType e) {
+	if (s->top==MaxSize-1)
+        return false;
+	s->top++;
+	s->data[s->top]=e;
+	return true;
+}
 
-//}
+bool pop(SqStack*&s, ElemType&e) {
+	if (s->top == -1)
+		return false;
+	e = s->data[s->top];
+	s->top--;
+	return true;
+}
+
+int peek(SqStack*s) {
+	if (s->top == -1)
+		return false;
+	return s->data[s->top];
+}
 
 int main() {
-    DLinkNode *FList,*RList;
-    int a[]={1,2,3,4,5,6,7,8};
-    creatListF(FList,a,8);
-    dispList(FList);
+    ElemType e;
+    SqStack *s;
+    initStack(s);
+    printf("Stack is %s\n",(isEmpty(s)?"empty":"not empty"));
+    push(s,1);
+    push(s,2);
+    push(s,3);
+    push(s,4);
+    push(s,5);
+    push(s,6);
+    printf("Stack is %s\n",(isEmpty(s)?"empty":"not empty"));
+    printf("Stack top is %d\n",peek(s));
+    while (!isEmpty(s))
+    {
+        pop(s,e);
+        printf("%d",e);
+    }
+    printf("\n");
+    printf("Stack is %s\n",(isEmpty(s)?"empty":"not empty"));
+    destoryStack(s);
 }
 
 
