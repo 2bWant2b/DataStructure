@@ -2,50 +2,61 @@
 #include <malloc.h>
 #define MaxSize 100
 typedef int ElemType;
-typedef struct 
+typedef struct linknode
 {
-    ElemType data[MaxSize];
-    int top;
-} SqStack;
+    ElemType data;
+    struct linknode *next;
+} LinkStNode;
 
-void initStack(SqStack*&s) {
-	s = (SqStack*)malloc(sizeof(SqStack));
-	s->top = -1;
+void initStack(LinkStNode *&s) {
+	s = (LinkStNode*)malloc(sizeof(LinkStNode));
+	s->next = NULL;
 }
 
-void destoryStack(SqStack*&s) {
+void destoryStack(LinkStNode *&s) {
+    LinkStNode *p=s->next;
+    while (p!=NULL)
+    {
+        free(s);
+        s=p;
+        p=p->next;
+    }
 	free(s);
 }
 
-bool isEmpty(SqStack*s){
-	return(s->top == -1);
+bool isEmpty(LinkStNode *s){
+	return(s->next == NULL);
 }
 
-bool push(SqStack*&s, ElemType e) {
-	if (s->top==MaxSize-1)
-        return false;
-	s->top++;
-	s->data[s->top]=e;
+bool push(LinkStNode*&s, ElemType e) {
+    LinkStNode *p;
+	p=(LinkStNode*)malloc(sizeof(LinkStNode));
+    p->data=e;
+    p->next=s->next;
+    s->next=p;
+    return true;
+}
+
+bool pop(LinkStNode *&s, ElemType &e) {
+    LinkStNode *p;
+	if (s->next == NULL)
+		return false;
+	p=s->next;
+    e=p->data;
+    s->next=p->next;
+    free(p);
 	return true;
 }
 
-bool pop(SqStack*&s, ElemType&e) {
-	if (s->top == -1)
+int peek(LinkStNode *s) {
+	if (s->next == NULL)
 		return false;
-	e = s->data[s->top];
-	s->top--;
-	return true;
-}
-
-int peek(SqStack*s) {
-	if (s->top == -1)
-		return false;
-	return s->data[s->top];
+	return s->next->data;
 }
 
 int main() {
     ElemType e;
-    SqStack *s;
+    LinkStNode *s;
     initStack(s);
     printf("Stack is %s\n",(isEmpty(s)?"empty":"not empty"));
     push(s,1);
