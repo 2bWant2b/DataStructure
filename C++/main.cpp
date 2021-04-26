@@ -1,11 +1,17 @@
 #include <cstdio>
 #include <malloc.h>
 typedef char ElemType;
+typedef int ElemType2;
 typedef struct LNode
 {
     ElemType data;
     struct LNode *next;
 } LinkNode;
+typedef struct LNode2
+{
+    ElemType2 data;
+    struct LNode2 *next;
+} LinkNode2;
 
 void creatListF(LinkNode *&L,ElemType a[],int n){
     LinkNode *s;
@@ -36,6 +42,11 @@ void creatListR(LinkNode *&L,ElemType a[],int n){
 
 void initList(LinkNode *&L){
     L=(LinkNode *)malloc(sizeof(LinkNode));
+    L->next=NULL;
+}
+
+void initList2(LinkNode2 *&L){
+    L=(LinkNode2 *)malloc(sizeof(LinkNode2));
     L->next=NULL;
 }
 
@@ -70,6 +81,16 @@ void dispList(LinkNode *L){
     while (p!=NULL)
     {
         printf("%c",p->data);
+        p=p->next;
+    }
+    printf("\n");
+}
+
+void dispList2(LinkNode2 *L){
+    LinkNode2 *p=L->next;
+    while (p!=NULL)
+    {
+        printf("%d",p->data);
         p=p->next;
     }
     printf("\n");
@@ -137,6 +158,26 @@ bool insertElem(LinkNode *&L,int i,ElemType e){
     }
 }
 
+bool insertElem2(LinkNode2 *&L,int i,ElemType2 e){
+    int j=0;
+    LinkNode2 *p=L,*s;
+    if(i<=0)return false;
+    while (j<i-1&&p!=NULL)
+    {
+        j++;
+        p=p->next;
+    }
+    if(p==NULL){
+        return false;
+    }else{
+        s=(LinkNode2 *)malloc(sizeof(LinkNode2));
+        s->data=e;
+        s->next=p->next;
+        p->next=s;
+        return true;
+    }
+}
+
 bool deleteElem(LinkNode *&L,int i,ElemType &e){
     int j=0;
     LinkNode *p=L,*q;
@@ -176,6 +217,43 @@ LinkNode* devideList(LinkNode *&L){
     return evenhead;
 }
 
+void searchMid(LinkNode *&L){
+    if(L->next=NULL){
+        printf("invalid link");
+    }else{
+        LinkNode *slow,*fast;
+        slow=L;
+        fast=L;
+        while (fast!=NULL && fast->next!=NULL)
+        {
+            slow=slow->next;
+            fast=fast->next->next;
+        }
+        printf("%d\n",slow->data);
+    }
+}
+
+void deleteX(LinkNode2 *&L,int x){
+    LinkNode2 *slow,*fast;
+    slow=fast=L;
+    while (fast->next!=nullptr)
+    {
+        fast=fast->next;
+        if(fast->data!=x){
+            slow=slow->next;
+        }else{
+            while (fast->data==x)
+            {
+                fast=fast->next;
+            }
+            slow->next=fast;
+            slow=slow->next;
+        }
+    }
+}
+
+
+
 int main() {
     LinkNode *list;
     ElemType e;
@@ -193,7 +271,6 @@ int main() {
     printf("a locates :%d\n",getElemNumber(list,'a'));
     insertElem(list,4,'f');
     dispList(list);
-    destroyList(list);
     printf("-------------附加题1--------------\n"); 
     LinkNode *Flist;
     char a[5]={'q','w','e','r','t'};
@@ -205,6 +282,32 @@ int main() {
     printf("-------------附加题2--------------\n");
     dispList2(devideList(Rlist));
     dispList(Rlist);
+    printf("-------------查找中间结点元素--------------\n");
+    LinkNode *L1,*s;
+    int n=15;
+    L1 = (LinkNode*)malloc(sizeof(LinkNode));
+    L1->next = NULL;
+    for (int i=0; i<n; i++)
+    {    s = (LinkNode*)malloc(sizeof(LinkNode));
+         s->data = n-i;        //值为逻辑序列的下标
+         s->next = L1->next;
+         L1->next = s;
+    }
+    searchMid(L1);
+    printf("-------------数据结构作业第一题--------------\n");
+    LinkNode2 *xL;
+    initList2(xL);
+    insertElem2(xL,1,1);
+    insertElem2(xL,1,2);
+    insertElem2(xL,1,4);
+    insertElem2(xL,1,5);
+    insertElem2(xL,1,2);
+    insertElem2(xL,1,1);
+    insertElem2(xL,1,2);
+    insertElem2(xL,1,9);
+    dispList2(xL);
+    deleteX(xL,2);
+    dispList2(xL);
 }
 
 
