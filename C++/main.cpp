@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <malloc.h>
-typedef int ElemType;
+typedef char ElemType;
 typedef struct DNode
 {
     ElemType data;
@@ -23,9 +23,10 @@ void creatListF(DLinkNode *&L,ElemType a[],int n){
         L->next=s;
         s->prior=L;
     }
+    s = L->next;
     while (s->next!=NULL)
     {
-        s->next=s;
+        s = s->next;
     }
     s->next=L;
     L->prior=s;
@@ -51,7 +52,7 @@ void creatListR(DLinkNode *&L,ElemType a[],int n){
 
 void dispList(DLinkNode *L){
     DLinkNode *p=L->next;
-    while (p!=NULL)
+    while (p!=L)
     {
         printf("%c",p->data);
         p=p->next;
@@ -59,15 +60,31 @@ void dispList(DLinkNode *L){
     printf("\n");
 }
 
-//void dispListRev(DLinkNode *L){
-
-//}
+void dispListRev(DLinkNode *L){
+    DLinkNode *p = L->prior;
+	while (p != L)
+	{
+		printf("%c", p->data);
+		p = p->prior;
+	}
+	printf("\n");
+}
 
 int main() {
     DLinkNode *FList,*RList;
-    int a[]={1,2,3,4,5,6,7,8};
+    FList=(DLinkNode*)malloc(sizeof(DLinkNode));
+    RList=(DLinkNode*)malloc(sizeof(DLinkNode));
+    FList->prior=FList->next=FList;
+    RList->prior=RList->next=RList;
+    ElemType a[]={'1','2','3','4','5','6','7','8'};
     creatListF(FList,a,8);
+    creatListR(RList,a,8);
+    printf("正序输出\n");
     dispList(FList);
+    dispList(RList);
+    printf("倒序输出\n");
+    dispListRev(FList);
+    dispListRev(RList);
 }
 
 
