@@ -86,7 +86,7 @@ void dispList(LinkNode *L){
     printf("\n");
 }
 
-void dispList2(LinkNode2 *L){
+void dispList3(LinkNode2 *L){
     LinkNode2 *p=L->next;
     while (p!=NULL)
     {
@@ -217,20 +217,17 @@ LinkNode* devideList(LinkNode *&L){
     return evenhead;
 }
 
-void searchMid(LinkNode *&L){
-    if(L->next=NULL){
-        printf("invalid link");
-    }else{
-        LinkNode *slow,*fast;
-        slow=L;
-        fast=L;
-        while (fast!=NULL && fast->next!=NULL)
-        {
-            slow=slow->next;
+LinkNode2* searchMid(LinkNode2 *&L){
+    LinkNode2 *slow,*fast;
+    slow=L;
+    fast=L;
+    while (fast!=NULL && fast->next!=NULL)
+    {
             fast=fast->next->next;
-        }
-        printf("%d\n",slow->data);
+            slow=slow->next;
+            
     }
+    return slow;
 }
 
 void deleteX(LinkNode2 *&L,int x){
@@ -283,31 +280,30 @@ int main() {
     dispList2(devideList(Rlist));
     dispList(Rlist);
     printf("-------------查找中间结点元素--------------\n");
-    LinkNode *L1,*s;
-    int n=15;
-    L1 = (LinkNode*)malloc(sizeof(LinkNode));
-    L1->next = NULL;
-    for (int i=0; i<n; i++)
-    {    s = (LinkNode*)malloc(sizeof(LinkNode));
-         s->data = n-i;        //值为逻辑序列的下标
-         s->next = L1->next;
-         L1->next = s;
-    }
-    searchMid(L1);
+    LinkNode2 *L1;
+    L1 = (LinkNode2*)malloc(sizeof(LinkNode2));
+    initList2(L1);
+    insertElem2(L1,1,1);
+    insertElem2(L1,1,2);
+    insertElem2(L1,1,3);
+    insertElem2(L1,1,4);
+    insertElem2(L1,1,5);
+    dispList3(L1);
+    printf("%d\n",searchMid(L1)->data);
     printf("-------------数据结构作业第一题--------------\n");
     LinkNode2 *xL;
     initList2(xL);
     insertElem2(xL,1,1);
     insertElem2(xL,1,2);
-    insertElem2(xL,1,4);
+    insertElem2(xL,1,2);
     insertElem2(xL,1,5);
     insertElem2(xL,1,2);
     insertElem2(xL,1,1);
     insertElem2(xL,1,2);
     insertElem2(xL,1,9);
-    dispList2(xL);
+    dispList3(xL);
     deleteX(xL,2);
-    dispList2(xL);
+    dispList3(xL);
 }
 
 
