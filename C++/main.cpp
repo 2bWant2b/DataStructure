@@ -1,54 +1,83 @@
 #include <cstdio>
 #include <malloc.h>
-#define MaxSize 6
 typedef char ElemType;
+typedef struct DataNode
+{
+    ElemType data;
+    struct DataNode *next;
+}DataNode;
 typedef struct 
 {
-    ElemType data[MaxSize];
-    int front,rear;
-}SqQueue;
+    DataNode *front;
+    DataNode *rear;
+}LinkQuNode;
 
-void initQueue(SqQueue *&q){
-    q=(SqQueue*)malloc(sizeof(SqQueue));
-    q->front=q->rear=0;
+void initQueue(LinkQuNode *&q){
+    q=(LinkQuNode*)malloc(sizeof(LinkQuNode));
+    q->front=q->rear=NULL;
 }
 
-void destroyQueue(SqQueue *&q){
+void destroyQueue(LinkQuNode *&q){
+    DataNode *p=q->front,*r;
+    if(p!=NULL){
+        r=p->next;
+        while (r!=NULL)
+        {
+            free(p);
+            p=r;
+            r=p->next;
+        }
+    }
+    free(p);
     free(q);
 }
 
-bool isEmpty(SqQueue *q){
-    return(q->front==q->rear);
+bool isEmpty(LinkQuNode *q){
+    return(q->rear==NULL);
 }
 
-bool enQueue(SqQueue*&q,ElemType e){
-    if((q->rear+1)%MaxSize==q->front) return false;
-    q->rear=(q->rear+1)%MaxSize;
-    q->data[q->rear]=e;
-    return true;
+void enQueue(LinkQuNode*&q,ElemType e){
+    DataNode *p;
+    p=(DataNode*)malloc(sizeof(DataNode));
+    p->data=e;
+    p->next=NULL;
+    if(q->rear==NULL){
+        q->front=q->rear=p;
+    }else{
+        q->rear->next=p;
+        q->rear=p;
+    }
 }
 
-bool deQueue(SqQueue *&q,ElemType &e){
-    if(q->front==q->rear) return false;
-    q->front=(q->front+1)%MaxSize;
-    e=q->data[q->front];
+bool deQueue(LinkQuNode *&q,ElemType &e){
+    DataNode *t;
+    if(q->rear==NULL) return false;
+    t=q->front;
+    if(q->front==q->rear){
+        q->front=q->rear=NULL;
+    }else{
+        q->front=q->front->next;
+    }
+    e=t->data;
+    free(t);
     return true;
 }
 
 int main(){
     ElemType e;
-    SqQueue *q;
+    LinkQuNode *q;
     initQueue(q);
-    if(!enQueue(q,'a')) printf("\t the queue is full\n"); else printf("enQueue a\n");
-    if(!enQueue(q,'b')) printf("\t the queue is full\n"); else printf("enQueue b\n");
-    if(!enQueue(q,'c')) printf("\t the queue is full\n"); else printf("enQueue c\n");
-    if(!enQueue(q,'d')) printf("\t the queue is full\n"); else printf("enQueue d\n");
-    if(!enQueue(q,'e')) printf("\t the queue is full\n"); else printf("enQueue e\n");
+    enQueue(q,'a'); printf("enQueue a\n");
+    enQueue(q,'b'); printf("enQueue b\n");
+    enQueue(q,'c'); printf("enQueue c\n");
+    enQueue(q,'d'); printf("enQueue d\n");
+    enQueue(q,'e'); printf("enQueue e\n");
+    enQueue(q,'f'); printf("enQueue f\n");
     printf("the queue is %s\n",(isEmpty(q)?"empty":"not empty"));
     while (!isEmpty(q))
     {
         deQueue(q,e);
-        printf("%c",e);
+        printf("deQueue %c\n",e);
     }
     destroyQueue(q);
 }
