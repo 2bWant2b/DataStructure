@@ -48,10 +48,40 @@ bool pop(LinkStNode *&s, ElemType &e) {
 	return true;
 }
 
+bool popeasy(LinkStNode *&s){
+    LinkStNode *p;
+	if (s->next == NULL)
+		return false;
+	p=s->next;
+    s->next=p->next;
+    free(p);
+	return true;
+}
+
 int peek(LinkStNode *s) {
 	if (s->next == NULL)
 		return false;
 	return s->next->data;
+}
+
+void pushSort(LinkStNode *&s,ElemType e){
+    LinkStNode *tempStack;
+    initStack(tempStack);
+    if(isEmpty(s)){
+        push(s,e);
+    }else{
+        while (!isEmpty(s)&&e>peek(s))
+        {
+            push(tempStack,peek(s));
+            popeasy(s);
+        }
+        push(s,e);
+        while (!isEmpty(tempStack))
+        {
+            push(s,peek(tempStack));
+            popeasy(tempStack);
+        }
+    }
 }
 
 int main() {
@@ -75,6 +105,19 @@ int main() {
     printf("\n");
     printf("Stack is %s\n",(isEmpty(s)?"empty":"not empty"));
     destoryStack(s);
+    printf("-----------------栈排序--------------------\n");
+    LinkStNode *sortStack;
+    ElemType e2;
+    initStack(sortStack);
+    pushSort(sortStack,1);
+    pushSort(sortStack,3);
+    pushSort(sortStack,4);
+    pushSort(sortStack,2);
+    while (!isEmpty(sortStack))
+    {
+       pop(sortStack,e2);
+       printf("%d",e2);
+    }
 }
 
 
