@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <malloc.h>
 #include <string.h>
-#define MaxSize 100
+#define MaxSize 1000
 typedef int ElemType;
 typedef char ElemType2;
 typedef struct 
@@ -60,6 +60,13 @@ bool pop(SqStack*&s, ElemType &e) {
 	e = s->data[s->top];
 	s->top--;
 	return true;
+}
+
+bool popeasy(SqStack *&s){
+    if (s->top == -1)
+            return false;
+    s->top--;
+    return true;
 }
 
 bool pop2(SqStack2 *&s, ElemType2 &e){
@@ -121,6 +128,25 @@ bool judgeBrackets(char str[]){
     return false;
 }
 
+void enQueue(SqStack *&S1,SqStack *&S2,ElemType e){
+    push(S1,e);
+}
+
+void deQueue(SqStack *&S1,SqStack *&S2,ElemType &e){
+    if(isEmpty(S2)){
+        if(isEmpty(S1)){
+            return;
+        }
+        while (!isEmpty(S1))
+        {
+            popeasy(S1);
+            push(S2,peek(S1));
+        }
+    }
+    popeasy(S2);
+    e=peek(S2);
+}
+
 int main() {
     ElemType e;
     SqStack *s;
@@ -142,9 +168,34 @@ int main() {
     printf("\n");
     printf("Stack is %s\n",(isEmpty(s)?"empty":"not empty"));
     destoryStack(s);
-    printf("---------------additional question-----------------\n");
+    printf("---------------判断括号合法性-----------------\n");
     char str1[]="a*{b*[1/(2-c)+1/(1+d)]-3}";
     char str2[]="a*{b*1/(2-c)+1/(1+d)]-3";
     printf("%s\n",(judgeBrackets(str1)?"valid brackets":"invalid brackets"));
     printf("%s\n",(judgeBrackets(str2)?"valid brackets":"invalid brackets"));
+    printf("---------------栈实现队列-----------------\n");
+    ElemType e2;
+    SqStack *S1,*S2;
+    S1 = (SqStack*)malloc(sizeof(SqStack));
+    S2 = (SqStack*)malloc(sizeof(SqStack));
+    initStack(S1);
+    initStack(S2);
+    enQueue(S1,S2,1);
+    enQueue(S1,S2,2);
+    enQueue(S1,S2,3);
+    enQueue(S1,S2,4);
+    deQueue(S1,S2,e2);
+    printf("1 %d\n",e2);
+    deQueue(S1,S2,e2);
+    printf("2 %d\n",e2);
+    enQueue(S1,S2,4);
+    enQueue(S1,S2,5);
+    enQueue(S1,S2,6);
+    enQueue(S1,S2,7);
+    deQueue(S1,S2,e2);
+    printf("3 %d\n",e2);
+    deQueue(S1,S2,e2);
+    printf("4 %d\n",e2);
+    deQueue(S1,S2,e2);
+    printf("5 %d\n",e2);
 }
