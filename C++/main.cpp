@@ -1,79 +1,77 @@
 #include <cstdio>
 #include <malloc.h>
+#define MaxSize 1000
 typedef char ElemType;
-typedef struct DataNode
-{
-    ElemType data;
-    struct DataNode *next;
-}DataNode;
 typedef struct 
 {
-    DataNode *front;
-    DataNode *rear;
-}LinkQuNode;
+    ElemType data[MaxSize];
+    int front,rear;
+}SqQueue;
 
-void initQueue(LinkQuNode *&q){
-    q=(LinkQuNode*)malloc(sizeof(LinkQuNode));
-    q->front=q->rear=NULL;
+
+void initQueue(SqQueue *&q){
+    q=(SqQueue*)malloc(sizeof(SqQueue));
+    q->front=q->rear=0;
 }
 
-void destroyQueue(LinkQuNode *&q){
-    DataNode *p=q->front,*r;
-    if(p!=NULL){
-        r=p->next;
-        while (r!=NULL)
-        {
-            free(p);
-            p=r;
-            r=p->next;
-        }
-    }
-    free(p);
+void destroyQueue(SqQueue *&q){
     free(q);
 }
 
-bool isEmpty(LinkQuNode *q){
-    return(q->rear==NULL);
+bool isEmpty(SqQueue *q){
+    return(q->front==q->rear);
 }
 
-void enQueue(LinkQuNode*&q,ElemType e){
-    DataNode *p;
-    p=(DataNode*)malloc(sizeof(DataNode));
-    p->data=e;
-    p->next=NULL;
-    if(q->rear==NULL){
-        q->front=q->rear=p;
-    }else{
-        q->rear->next=p;
-        q->rear=p;
+bool enQueue(SqQueue*&q,ElemType e){
+    if((q->rear+1)%MaxSize==q->front){
+        return false;
     }
-}
-
-bool deQueue(LinkQuNode *&q,ElemType &e){
-    DataNode *t;
-    if(q->rear==NULL) return false;
-    t=q->front;
-    if(q->front==q->rear){
-        q->front=q->rear=NULL;
-    }else{
-        q->front=q->front->next;
-    }
-    e=t->data;
-    free(t);
+    q->rear=(q->rear+1)%MaxSize;
+    q->data[q->rear]=e;
     return true;
+}
+
+bool deQueue(SqQueue *&q,ElemType &e){
+    if(q->front==q->rear){
+        return false;
+    }
+    q->front=(q->front+1)%MaxSize;
+    e=q->data[q->front];
+    return true;
+}
+
+SqQueue* enQueueSort(SqQueue *&q){
+    if(q->rear==q->front+1){
+        return q;
+    }
+    ElemType e;
+    ElemType a;
+    deQueue(q,e);
+    enQueueSort(q);
+    while (e>q->data[q->front+1])
+    {
+        deQueue(q,a);
+        enQueue(q,a);
+    }
+    enQueue(q,e);
+    return q;
 }
 
 int main(){
     ElemType e;
-    LinkQuNode *q;
+    SqQueue *q;
     initQueue(q);
+    enQueue(q,'c'); printf("enQueue c\n");
+    enQueue(q,'f'); printf("enQueue f\n");
+    enQueue(q,'b'); printf("enQueue b\n");
+    enQueue(q,'f'); printf("enQueue f\n");
+    enQueue(q,'f'); printf("enQueue f\n");
+    enQueue(q,'e'); printf("enQueue e\n");
     enQueue(q,'a'); printf("enQueue a\n");
     enQueue(q,'b'); printf("enQueue b\n");
-    enQueue(q,'c'); printf("enQueue c\n");
     enQueue(q,'d'); printf("enQueue d\n");
-    enQueue(q,'e'); printf("enQueue e\n");
-    enQueue(q,'f'); printf("enQueue f\n");
     printf("the queue is %s\n",(isEmpty(q)?"empty":"not empty"));
+    q=enQueueSort(q);
     while (!isEmpty(q))
     {
         deQueue(q,e);
