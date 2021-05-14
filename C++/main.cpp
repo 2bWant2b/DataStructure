@@ -1,141 +1,127 @@
 #include <cstdio>
 #include <malloc.h>
 #define MaxSize 100
-typedef int ElemType;
-typedef struct linknode
+typedef char ElemType;
+typedef struct node
 {
     ElemType data;
-    struct linknode *next;
-} LinkStNode;
+    struct node *lchild;
+    struct node *rchild;
+}BTNode;
 
-void initStack(LinkStNode *&s) {
-	s = (LinkStNode*)malloc(sizeof(LinkStNode));
-	s->next = NULL;
-}
-
-void destoryStack(LinkStNode *&s) {
-    LinkStNode *p=s->next;
-    while (p!=NULL)
+void createBTree(BTNode *&b,char *str){
+    BTNode *St[MaxSize],*p;
+    int top=-1,k,j=0;char ch;
+    b=NULL;
+    ch=str[j];
+    while (ch!='\0')
     {
-        free(s);
-        s=p;
-        p=p->next;
+        switch (ch)
+        {
+        case '(':
+            top++;St[top]=p;k=1;
+            break;
+        case ')':
+            top--;
+            break;
+        case ',':
+            k=2;
+            break;
+        default:
+            p=(BTNode*)malloc(sizeof(BTNode));
+            p->data=ch;
+            p->lchild=p->rchild=NULL;
+            if(b==NULL){
+                b=p;
+            }else{
+                switch (k)
+                {
+                case 1:
+                    St[top]->lchild=p;
+                    break;
+                case 2:
+                    St[top]->rchild=p;
+                default:
+                    break;
+                }
+            }
+            break;
+        }
+        j++;
+        ch=str[j];
     }
-	free(s);
 }
 
-bool isEmpty(LinkStNode *s){
-	return(s->next == NULL);
+void destroyBTree(BTNode *&b){
+    if(b!=NULL){
+        destroyBTree(b->lchild);
+        destroyBTree(b->rchild);
+        free(b);
+    }
 }
 
-bool push(LinkStNode*&s, ElemType e) {
-    LinkStNode *p;
-	p=(LinkStNode*)malloc(sizeof(LinkStNode));
-    p->data=e;
-    p->next=s->next;
-    s->next=p;
-    return true;
-}
-
-bool pop(LinkStNode *&s, ElemType &e) {
-    LinkStNode *p;
-	if (s->next == NULL)
-		return false;
-	p=s->next;
-    e=p->data;
-    s->next=p->next;
-    free(p);
-	return true;
-}
-
-bool popeasy(LinkStNode *&s){
-    LinkStNode *p;
-	if (s->next == NULL)
-		return false;
-	p=s->next;
-    s->next=p->next;
-    free(p);
-	return true;
-}
-
-int peek(LinkStNode *s) {
-	if (s->next == NULL)
-		return false;
-	return s->next->data;
-}
-
-void pushSort(LinkStNode *&s,ElemType e){
-    LinkStNode *tempStack;
-    initStack(tempStack);
-    if(isEmpty(s)){
-        push(s,e);
+BTNode* findNode(BTNode *b,ElemType x){
+    BTNode *p;
+    if(b==NULL){
+        return NULL;
+    }else if (b->data==x)
+    {
+        return b;
     }else{
-        while (!isEmpty(s)&&e>peek(s))
-        {
-            push(tempStack,peek(s));
-            popeasy(s);
-        }
-        push(s,e);
-        while (!isEmpty(tempStack))
-        {
-            push(s,peek(tempStack));
-            popeasy(tempStack);
+        p=findNode(b->lchild,x);
+        if(p!=NULL) return p;
+        else return findNode(b->rchild,x);
+    }
+    
+}
+
+BTNode* lchildNode(BTNode *p){
+    return p->lchild;
+}
+
+BTNode* rchildNode(BTNode *p){
+    return p->rchild;
+}
+
+int getHeight(BTNode *b){
+    int lchild_h,rchild_h;
+    if(b==NULL) return 0;
+    else{
+        lchild_h=getHeight(b->lchild);
+        rchild_h=getHeight(b->rchild);
+        return (lchild_h>rchild_h)?(lchild_h+1):(rchild_h+1);
+    }
+}
+
+void dispBTree(BTNode *b){
+    if(b!=NULL){
+        printf("%c",b->data);
+        if(b->lchild!=NULL||b->rchild!=NULL){
+            printf("(");
+            dispBTree(b->lchild);
+            if(b->rchild!=NULL) printf(",");
+            dispBTree(b->rchild);
+            printf(")");
         }
     }
 }
 
-int main() {
-    ElemType e;
-    LinkStNode *s;
-    initStack(s);
-    printf("Stack is %s\n",(isEmpty(s)?"empty":"not empty"));
-    push(s,1);
-    push(s,2);
-    push(s,3);
-    push(s,4);
-    push(s,5);
-    push(s,6);
-    printf("Stack is %s\n",(isEmpty(s)?"empty":"not empty"));
-    printf("Stack top is %d\n",peek(s));
-    while (!isEmpty(s))
-    {
-        pop(s,e);
-        printf("%d",e);
+int main(){
+    BTNode *b,*p,*lp,*rp;
+    char str[255]="A(B(D,E(H(J,K(L,M(,N))))),C(F,G(,I)))";
+    createBTree(b,str);
+    dispBTree(b);
+    printf("\n");
+    p=findNode(b,'H');
+    if(p!=NULL){
+        lp=lchildNode(p);
+        if(lp!=NULL) printf("左孩子为%c",lp->data);
+        else printf("无左孩子");
+        rp=rchildNode(p);
+        if(rp!=NULL) printf("右孩子为%c",rp->data);
+        else printf("无右孩子");
     }
     printf("\n");
-    printf("Stack is %s\n",(isEmpty(s)?"empty":"not empty"));
-    destoryStack(s);
-    printf("-----------------栈排序--------------------\n");
-    LinkStNode *sortStack;
-    ElemType e2;
-    initStack(sortStack);
-    pushSort(sortStack,1);
-    pushSort(sortStack,3);
-    pushSort(sortStack,4);
-    pushSort(sortStack,2);
-    while (!isEmpty(sortStack))
-    {
-       pop(sortStack,e2);
-       printf("%d",e2);
-    }
+    printf("%d\n",getHeight(b));
+    destroyBTree(b);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
