@@ -9,6 +9,7 @@ typedef struct node
     struct node *rchild;
 }BTNode;
 
+
 void createBTree(BTNode *&b,char *str){
     BTNode *St[MaxSize],*p;
     int top=-1,k,j=0;char ch;
@@ -106,6 +107,7 @@ void dispBTree(BTNode *b){
     }
 }
 
+// TODO 附加题还没看，树的实现结构还没弄懂
 int main(){
     BTNode *b,*p,*lp,*rp;
     char str[255]="A(B(D,E(H(J,K(L,M(,N))))),C(F,G(,I)))";
