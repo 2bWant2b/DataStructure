@@ -104,7 +104,76 @@ void dispBTree(BTNode *b){
             dispBTree(b->rchild);
             printf(")");
         }
+    }else{
+        printf("Tree is NULL");
     }
+}
+
+void preOrder(BTNode *b) {
+    if(b!=NULL){
+        printf("%c",b->data);
+        preOrder(b->lchild);
+        preOrder(b->rchild);
+    }
+}
+
+void inOrder(BTNode *b) {
+    if(b!=NULL){
+        inOrder(b->lchild);
+        printf("%c",b->data);
+        inOrder(b->rchild);
+    }
+}
+
+void postOrder(BTNode *b){
+    if(b!=NULL){
+        postOrder(b->lchild);
+        postOrder(b->rchild);
+        printf("%c",b->data);
+    }
+}
+
+void travLevel(BTNode *b) {
+    BTNode *Qu[MaxSize];
+    int front,rear;
+    front=rear=0;
+    if(b!=NULL) printf("%c",b->data);
+    rear++;
+    Qu[rear]=b;
+    while(rear!=front){
+        front=(front+1)%MaxSize;
+        b=Qu[front];
+        if (b->lchild!=NULL){
+            printf("%c",b->lchild->data);
+            rear=(rear+1)%MaxSize;
+            Qu[rear]=b->lchild;
+        }
+        if (b->rchild!=NULL){
+            printf("%c",b->rchild->data);
+            rear=(rear+1)%MaxSize;
+            Qu[rear]=b->rchild;
+        }
+    }
+    printf("\n");
+}
+
+void dfs(BTNode *&b, char x){
+    if (b == NULL) return;
+    if (b->data == x){
+        b->lchild = NULL;
+        b->rchild = NULL;
+        b->data = 'a';
+    }
+    dfs(b->lchild,x);
+    dfs(b->rchild,x);
+}
+
+BTNode* remove(BTNode *&b, char x){
+    if (!b) return NULL;
+    b->lchild=remove(b->lchild,x);
+    b->rchild=remove(b->rchild,x);
+    if (!b->lchild && !b->rchild && b->data == x) return NULL;
+    return b;
 }
 
 // TODO 附加题还没看，树的实现结构还没弄懂
@@ -125,5 +194,20 @@ int main(){
     }
     printf("\n");
     printf("%d\n",getHeight(b));
-    destroyBTree(b);
+
+    printf("---------------第八次实验-----------------\n");
+    printf("前序遍历：\n");
+    preOrder(b);
+    printf("\n");
+    printf("中序遍历：\n");
+    inOrder(b);
+    printf("\n");
+    printf("后序遍历：\n");
+    postOrder(b);
+    printf("\n");
+    printf("层次遍历：\n");
+    travLevel(b);
+    printf("删除子树：\n");
+    dfs(b,'A');
+    dispBTree(remove(b,'a'));
 }
