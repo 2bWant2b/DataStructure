@@ -128,6 +128,7 @@ bool judgeBrackets(char str[]){
     return false;
 }
 
+// TODO 栈实现队列有点问题，只能连续出队不能进队后再出队，否则会打印一个0
 void enQueue(SqStack *&S1,SqStack *&S2,ElemType e){
     push(S1,e);
 }
@@ -198,4 +199,6 @@ int main() {
     printf("4 %d\n",e2);
     deQueue(S1,S2,e2);
     printf("5 %d\n",e2);
+    deQueue(S1,S2,e2);
+    printf("6 %d\n",e2);
 }
