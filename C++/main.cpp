@@ -40,6 +40,7 @@ bool deQueue(SqQueue *&q,ElemType &e){
     return true;
 }
 
+// TODO 递归不能实现因为不能保存返回值
 SqQueue* enQueueSort(SqQueue *&q){
     if(q->rear==q->front+1){
         return q;
