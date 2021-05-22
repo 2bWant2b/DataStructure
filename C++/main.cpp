@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <malloc.h>
 #include <string.h>
-#define MaxSize 1000
+#define MaxSize 5
 typedef int ElemType;
 typedef char ElemType2;
 typedef struct 
@@ -64,7 +64,7 @@ bool pop(SqStack*&s, ElemType &e) {
 
 bool popeasy(SqStack *&s){
     if (s->top == -1)
-            return false;
+        return false;
     s->top--;
     return true;
 }
@@ -133,19 +133,20 @@ void enQueue(SqStack *&S1,SqStack *&S2,ElemType e){
     push(S1,e);
 }
 
-void deQueue(SqStack *&S1,SqStack *&S2,ElemType &e){
+int deQueue(SqStack *&S1,SqStack *&S2){
     if(isEmpty(S2)){
         if(isEmpty(S1)){
-            return;
+            return NULL;
         }
         while (!isEmpty(S1))
         {
-            popeasy(S1);
             push(S2,peek(S1));
+            popeasy(S1);
         }
     }
+    int peek1 = peek(S2);
     popeasy(S2);
-    e=peek(S2);
+    return peek1;
 }
 
 int main() {
@@ -175,7 +176,6 @@ int main() {
     printf("%s\n",(judgeBrackets(str1)?"valid brackets":"invalid brackets"));
     printf("%s\n",(judgeBrackets(str2)?"valid brackets":"invalid brackets"));
     printf("---------------栈实现队列-----------------\n");
-    ElemType e2;
     SqStack *S1,*S2;
     S1 = (SqStack*)malloc(sizeof(SqStack));
     S2 = (SqStack*)malloc(sizeof(SqStack));
@@ -184,13 +184,11 @@ int main() {
     enQueue(S1,S2,1);
     enQueue(S1,S2,2);
     enQueue(S1,S2,3);
+    printf("%d\n",deQueue(S1,S2));
+    printf("%d\n",deQueue(S1,S2));
     enQueue(S1,S2,4);
-    deQueue(S1,S2,e2);
-    printf("%d\n",e2);
-    deQueue(S1,S2,e2);
-    printf("%d\n",e2);
-    deQueue(S1,S2,e2);
-    printf("%d\n",e2);
-    deQueue(S1,S2,e2);
-    printf("%d\n",e2);
+    enQueue(S1,S2,5);
+    printf("%d\n",deQueue(S1,S2));
+    printf("%d\n",deQueue(S1,S2));
+    printf("%d\n",deQueue(S1,S2));
 }
