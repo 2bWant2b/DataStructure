@@ -61,17 +61,13 @@ int main(){
     ElemType e;
     SqQueue *q;
     initQueue(q);
-    enQueue(q,'c'); printf("enQueue c\n");
-    enQueue(q,'f'); printf("enQueue f\n");
-    enQueue(q,'b'); printf("enQueue b\n");
-    enQueue(q,'f'); printf("enQueue f\n");
-    enQueue(q,'f'); printf("enQueue f\n");
-    enQueue(q,'e'); printf("enQueue e\n");
     enQueue(q,'a'); printf("enQueue a\n");
     enQueue(q,'b'); printf("enQueue b\n");
+    enQueue(q,'c'); printf("enQueue c\n");
     enQueue(q,'d'); printf("enQueue d\n");
+    enQueue(q,'e'); printf("enQueue e\n");
     printf("the queue is %s\n",(isEmpty(q)?"empty":"not empty"));
-    q=enQueueSort(q);
+    // q=enQueueSort(q);
     while (!isEmpty(q))
     {
         deQueue(q,e);
