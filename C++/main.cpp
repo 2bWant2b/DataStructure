@@ -186,19 +186,11 @@ int main() {
     enQueue(S1,S2,3);
     enQueue(S1,S2,4);
     deQueue(S1,S2,e2);
-    printf("1 %d\n",e2);
+    printf("%d\n",e2);
     deQueue(S1,S2,e2);
-    printf("2 %d\n",e2);
-    enQueue(S1,S2,4);
-    enQueue(S1,S2,5);
-    enQueue(S1,S2,6);
-    enQueue(S1,S2,7);
+    printf("%d\n",e2);
     deQueue(S1,S2,e2);
-    printf("3 %d\n",e2);
+    printf("%d\n",e2);
     deQueue(S1,S2,e2);
-    printf("4 %d\n",e2);
-    deQueue(S1,S2,e2);
-    printf("5 %d\n",e2);
-    deQueue(S1,S2,e2);
-    printf("6 %d\n",e2);
+    printf("%d\n",e2);
 }
