@@ -104,8 +104,6 @@ void dispBTree(BTNode *b){
             dispBTree(b->rchild);
             printf(")");
         }
-    }else{
-        printf("Tree is NULL");
     }
 }
 
@@ -168,11 +166,11 @@ void dfs(BTNode *&b, char x){
     dfs(b->rchild,x);
 }
 
-BTNode* remove(BTNode *&b, char x){
+BTNode* remove(BTNode *&b){
     if (!b) return NULL;
-    b->lchild=remove(b->lchild,x);
-    b->rchild=remove(b->rchild,x);
-    if (!b->lchild && !b->rchild && b->data == x) return NULL;
+    b->lchild=remove(b->lchild);
+    b->rchild=remove(b->rchild);
+    if (!b->lchild && !b->rchild && b->data == 'a') return NULL;
     return b;
 }
 
@@ -208,6 +206,8 @@ int main(){
     printf("层次遍历：\n");
     travLevel(b);
     printf("删除子树：\n");
-    dfs(b,'A');
-    dispBTree(remove(b,'a'));
+    dfs(b,'C');
+    b = remove(b);
+    if (b == NULL) printf("Tree is empty");
+    else dispBTree(b);
 }
