@@ -84,6 +84,25 @@ void pushSort(LinkStNode *&s,ElemType e){
     }
 }
 
+void enQueue(LinkStNode *&S1,LinkStNode *&S2,ElemType e){
+    push(S1,e);
+}
+
+void deQueue(LinkStNode *&S1,LinkStNode *&S2,ElemType &e){
+    if(isEmpty(S2)){
+        if(isEmpty(S1)){
+            return;
+        }
+        while (!isEmpty(S1))
+        {
+            popeasy(S1);
+            push(S2,peek(S1));
+        }
+    }
+    popeasy(S2);
+    e=peek(S2);
+}
+
 int main() {
     ElemType e;
     LinkStNode *s;
@@ -116,8 +135,26 @@ int main() {
     while (!isEmpty(sortStack))
     {
        pop(sortStack,e2);
-       printf("%d",e2);
+       printf("%d\n",e2);
     }
+    printf("----------------链栈实现队列-------------------\n");
+    LinkStNode *S1 , *S2;
+    ElemType e3;
+    initStack(S1);
+    initStack(S2);
+    enQueue(S1,S2,1);
+    enQueue(S2,S1,2);
+    enQueue(S1,S2,3);
+    enQueue(S1,S2,4);
+    enQueue(S1,S2,5);
+    deQueue(S1,S2,e3);
+    printf("%d\n",e3);
+    deQueue(S1,S2,e3);
+    printf("%d\n",e3);
+    deQueue(S1,S2,e3);
+    printf("%d\n",e3);
+    deQueue(S1,S2,e3);
+    printf("%d",e3);
 }
 
 
