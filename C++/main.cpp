@@ -174,6 +174,15 @@ BTNode* remove(BTNode *&b){
     return b;
 }
 
+BTNode *getNearestAncestor(BTNode *root,char ch1,char ch2){
+    if (root == NULL || root->data == ch1 || root->data == ch2) return root;
+    BTNode *left = getNearestAncestor(root->lchild,ch1,ch2);
+    BTNode *right = getNearestAncestor(root->rchild,ch1,ch2);
+    if (left == NULL) return right;
+    if (right == NULL) return left;
+    return root;
+}
+
 // TODO 附加题还没看，树的实现结构还没弄懂
 int main(){
     BTNode *b,*p,*lp,*rp;
@@ -192,7 +201,8 @@ int main(){
     }
     printf("\n");
     printf("%d\n",getHeight(b));
-
+    printf("---------------第七次实验：寻找最近公共祖先-----------------\n");
+    printf("%c\n",getNearestAncestor(b,'J','M')->data);
     printf("---------------第八次实验-----------------\n");
     printf("前序遍历：\n");
     preOrder(b);
