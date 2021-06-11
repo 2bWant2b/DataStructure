@@ -174,6 +174,14 @@ BTNode* remove(BTNode *&b){
     return b;
 }
 
+BTNode* dfsRemove(BTNode *&b,char x){
+    if (!b) return NULL;
+    b->lchild=remove(b->lchild);
+    b->rchild=remove(b->rchild);
+    if (!b->lchild && !b->rchild && b->data == x) return NULL;
+    return b;
+}
+
 BTNode *getNearestAncestor(BTNode *root,char ch1,char ch2){
     if (root == NULL || root->data == ch1 || root->data == ch2) return root;
     BTNode *left = getNearestAncestor(root->lchild,ch1,ch2);
@@ -220,4 +228,5 @@ int main(){
     b = remove(b);
     if (b == NULL) printf("Tree is empty");
     else dispBTree(b);
+    
 }
