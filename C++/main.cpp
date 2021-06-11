@@ -1,223 +1,135 @@
 #include <cstdio>
 #include <malloc.h>
-#define MaxSize 100
-typedef char ElemType;
-typedef struct node
+#define MAXL 100
+typedef int KeyType;
+typedef char InfoType;
+typedef struct
 {
-    ElemType data;
-    struct node *lchild;
-    struct node *rchild;
-}BTNode;
+    KeyType key;
+    InfoType data;
+}RecType;
 
+void swap(RecType &x,RecType &y){
+    RecType tmp = x;
+    x = y;
+    y = tmp;
+}
 
-void createBTree(BTNode *&b,char *str){
-    BTNode *St[MaxSize],*p;
-    int top=-1,k,j=0;char ch;
-    b=NULL;
-    ch=str[j];
-    while (ch!='\0')
-    {
-        switch (ch)
-        {
-        case '(':
-            top++;St[top]=p;k=1;
-            break;
-        case ')':
-            top--;
-            break;
-        case ',':
-            k=2;
-            break;
-        default:
-            p=(BTNode*)malloc(sizeof(BTNode));
-            p->data=ch;
-            p->lchild=p->rchild=NULL;
-            if(b==NULL){
-                b=p;
-            }else{
-                switch (k)
-                {
-                case 1:
-                    St[top]->lchild=p;
-                    break;
-                case 2:
-                    St[top]->rchild=p;
-                default:
-                    break;
-                }
+void createList(RecType R[],KeyType keys[],int n){
+    for(int i=0;i<n;i++){
+        R[i].key=keys[i];
+    }
+}
+
+void dispList(RecType R[],int n){
+    for(int i=0;i<n;i++){
+        printf("%d ",R[i].key);
+    }
+    printf("\n");
+}
+
+// *插入排序
+void insertSort(RecType R[],int n){
+    int i,j;
+    RecType tmp;
+    for(i=1;i<n;i++){
+        printf("i = %d,插入 %d,插入结果：",i,R[i].key);
+        if(R[i].key<R[i-1].key){
+            tmp=R[i];
+            j=i-1;
+            do{
+                R[j+1]=R[j];
+                j--;
+            }while(j>=0&&R[j].key>tmp.key);
+            R[j+1]=tmp;
+        }
+        dispList(R,n);
+    }
+}
+
+//* 冒泡排序
+void BubbleSort(RecType R[],int n){
+    int i,j;
+    bool exchange;
+    for(i=0;i<n-1;i++){
+        exchange = false;
+        for(j=n-1;j>i;j--){
+            if(R[j].key<R[j-1].key){
+                swap(R[j],R[j-1]);
+                exchange = true;
             }
-            break;
         }
-        j++;
-        ch=str[j];
+        printf("i=%d:归位元素%d,排序结果：",i,R[i].key);
+            dispList(R,n);
+            if(!exchange){
+                return;
+            }
     }
 }
 
-void destroyBTree(BTNode *&b){
-    if(b!=NULL){
-        destroyBTree(b->lchild);
-        destroyBTree(b->rchild);
-        free(b);
+//* 快速排序显示一趟划分后结果
+void disppart(RecType R[],int s,int t){
+    static int i = 1;
+    int j;
+    printf("第%d次划分：",i);
+    for(j=0;j<s;j++){
+        printf("   ");
     }
+    for(j=s;j<=t;j++){
+        printf("%3d",R[j].key);
+    }
+    printf("\n");
+    i++;
 }
 
-BTNode* findNode(BTNode *b,ElemType x){
-    BTNode *p;
-    if(b==NULL){
-        return NULL;
-    }else if (b->data==x)
-    {
-        return b;
+//* 快速排序一趟划分
+int partition(RecType R[],int s,int t){
+    int i=s,j=t;
+    RecType base=R[i];
+    while(i<j){
+        while(j>i&&R[j].key>=base.key){j--;}
+        R[i]=R[j];
+        while(i<j&&R[i].key<=base.key){i++;}
+        R[j]=R[i];
+    }
+    R[i]=base;
+    disppart(R,s,t);
+    return i;
+}
+
+//* 快速排序算法
+void quickSort(RecType R[],int s,int t){
+    int i;
+    if(s<t){
+        i=partition(R,s,t);
+        quickSort(R,s,i-1);
+        quickSort(R,i+1,t);
     }else{
-        p=findNode(b->lchild,x);
-        if(p!=NULL) return p;
-        else return findNode(b->rchild,x);
-    }
-    
-}
-
-BTNode* lchildNode(BTNode *p){
-    return p->lchild;
-}
-
-BTNode* rchildNode(BTNode *p){
-    return p->rchild;
-}
-
-int getHeight(BTNode *b){
-    int lchild_h,rchild_h;
-    if(b==NULL) return 0;
-    else{
-        lchild_h=getHeight(b->lchild);
-        rchild_h=getHeight(b->rchild);
-        return (lchild_h>rchild_h)?(lchild_h+1):(rchild_h+1);
+        printf("Invalid parameter!\n");
     }
 }
 
-void dispBTree(BTNode *b){
-    if(b!=NULL){
-        printf("%c",b->data);
-        if(b->lchild!=NULL||b->rchild!=NULL){
-            printf("(");
-            dispBTree(b->lchild);
-            if(b->rchild!=NULL) printf(",");
-            dispBTree(b->rchild);
-            printf(")");
-        }
-    }
-}
-
-void preOrder(BTNode *b) {
-    if(b!=NULL){
-        printf("%c",b->data);
-        preOrder(b->lchild);
-        preOrder(b->rchild);
-    }
-}
-
-void inOrder(BTNode *b) {
-    if(b!=NULL){
-        inOrder(b->lchild);
-        printf("%c",b->data);
-        inOrder(b->rchild);
-    }
-}
-
-void postOrder(BTNode *b){
-    if(b!=NULL){
-        postOrder(b->lchild);
-        postOrder(b->rchild);
-        printf("%c",b->data);
-    }
-}
-
-void travLevel(BTNode *b) {
-    BTNode *Qu[MaxSize];
-    int front,rear;
-    front=rear=0;
-    if(b!=NULL) printf("%c",b->data);
-    rear++;
-    Qu[rear]=b;
-    while(rear!=front){
-        front=(front+1)%MaxSize;
-        b=Qu[front];
-        if (b->lchild!=NULL){
-            printf("%c",b->lchild->data);
-            rear=(rear+1)%MaxSize;
-            Qu[rear]=b->lchild;
-        }
-        if (b->rchild!=NULL){
-            printf("%c",b->rchild->data);
-            rear=(rear+1)%MaxSize;
-            Qu[rear]=b->rchild;
-        }
-    }
-    printf("\n");
-}
-
-void dfs(BTNode *&b, char x){
-    if (b == NULL) return;
-    if (b->data == x){
-        b->lchild = NULL;
-        b->rchild = NULL;
-        b->data = 'a';
-    }
-    dfs(b->lchild,x);
-    dfs(b->rchild,x);
-}
-
-BTNode* remove(BTNode *&b){
-    if (!b) return NULL;
-    b->lchild=remove(b->lchild);
-    b->rchild=remove(b->rchild);
-    if (!b->lchild && !b->rchild && b->data == 'a') return NULL;
-    return b;
-}
-
-BTNode *getNearestAncestor(BTNode *root,char ch1,char ch2){
-    if (root == NULL || root->data == ch1 || root->data == ch2) return root;
-    BTNode *left = getNearestAncestor(root->lchild,ch1,ch2);
-    BTNode *right = getNearestAncestor(root->rchild,ch1,ch2);
-    if (left == NULL) return right;
-    if (right == NULL) return left;
-    return root;
-}
-
-// TODO 附加题还没看，树的实现结构还没弄懂
 int main(){
-    BTNode *b,*p,*lp,*rp;
-    char str[255]="A(B(D,E(H(J,K(L,M(,N))))),C(F,G(,I)))";
-    createBTree(b,str);
-    dispBTree(b);
-    printf("\n");
-    p=findNode(b,'H');
-    if(p!=NULL){
-        lp=lchildNode(p);
-        if(lp!=NULL) printf("左孩子为%c",lp->data);
-        else printf("无左孩子");
-        rp=rchildNode(p);
-        if(rp!=NULL) printf("右孩子为%c",rp->data);
-        else printf("无右孩子");
-    }
-    printf("\n");
-    printf("%d\n",getHeight(b));
-    printf("---------------第七次实验：寻找最近公共祖先-----------------\n");
-    printf("%c\n",getNearestAncestor(b,'J','M')->data);
-    printf("---------------第八次实验-----------------\n");
-    printf("前序遍历：\n");
-    preOrder(b);
-    printf("\n");
-    printf("中序遍历：\n");
-    inOrder(b);
-    printf("\n");
-    printf("后序遍历：\n");
-    postOrder(b);
-    printf("\n");
-    printf("层次遍历：\n");
-    travLevel(b);
-    printf("删除子树：\n");
-    dfs(b,'C');
-    b = remove(b);
-    if (b == NULL) printf("Tree is empty");
-    else dispBTree(b);
+    int n=10;
+    printf("------------------插入排序--------------------\n");
+    KeyType a[]={9,8,7,6,5,4,3,2,1,0};
+    RecType R[MAXL];
+    createList(R,a,n);
+    dispList(R,n);
+    insertSort(R,n);
+    dispList(R,n);
+    printf("------------------冒泡排序--------------------\n");
+    KeyType a2[]={6,8,7,9,0,1,3,2,4,5};
+    RecType R2[MAXL];
+    createList(R2,a2,n);
+    dispList(R2,n);
+    BubbleSort(R2,n);
+    dispList(R2,n);
+    printf("------------------冒泡排序--------------------\n");
+    KeyType a3[]={6,8,7,9,0,1,3,2,4,5};
+    RecType R3[MAXL];
+    createList(R3,a3,n);
+    dispList(R3,n);
+    quickSort(R3,0,n-1);
+    dispList(R3,n);
 }
