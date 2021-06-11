@@ -228,5 +228,4 @@ int main(){
     b = remove(b);
     if (b == NULL) printf("Tree is empty");
     else dispBTree(b);
-    
 }
