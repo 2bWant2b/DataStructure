@@ -1,223 +1,125 @@
-#include <cstdio>
+#include <stdio.h>
 #include <malloc.h>
-#define MaxSize 100
-typedef char ElemType;
-typedef struct node
+#define INF 32767				
+#define	MAXV 100				
+typedef char InfoType;
+
+typedef struct
+{	int no;						
+	InfoType info;				
+} VertexType;					
+typedef struct
+{	int edges[MAXV][MAXV];		
+	int n,e;					
+	VertexType vexs[MAXV];		
+} MatGraph;						
+
+//以下定义邻接表类型
+typedef struct ANode
+{	int adjvex;					
+	struct ANode *nextarc;		
+	int weight;					
+} ArcNode;						
+typedef struct Vnode
+{	InfoType info;				
+	int count;					
+	ArcNode *firstarc;			
+} VNode;						
+typedef struct 
+{	VNode adjlist[MAXV];		
+	int n,e;					
+} AdjGraph;						
+
+void CreateMat(MatGraph &g,int A[MAXV][MAXV],int n,int e) 
 {
-    ElemType data;
-    struct node *lchild;
-    struct node *rchild;
-}BTNode;
-
-
-void createBTree(BTNode *&b,char *str){
-    BTNode *St[MaxSize],*p;
-    int top=-1,k,j=0;char ch;
-    b=NULL;
-    ch=str[j];
-    while (ch!='\0')
-    {
-        switch (ch)
-        {
-        case '(':
-            top++;St[top]=p;k=1;
-            break;
-        case ')':
-            top--;
-            break;
-        case ',':
-            k=2;
-            break;
-        default:
-            p=(BTNode*)malloc(sizeof(BTNode));
-            p->data=ch;
-            p->lchild=p->rchild=NULL;
-            if(b==NULL){
-                b=p;
-            }else{
-                switch (k)
-                {
-                case 1:
-                    St[top]->lchild=p;
-                    break;
-                case 2:
-                    St[top]->rchild=p;
-                default:
-                    break;
-                }
-            }
-            break;
-        }
-        j++;
-        ch=str[j];
-    }
+	int i,j;
+	g.n=n; g.e=e;
+	for (i=0;i<g.n;i++)
+		for (j=0;j<g.n;j++)
+			g.edges[i][j]=A[i][j];
+}
+void DispMat(MatGraph g)	
+{
+	int i,j;
+	for (i=0;i<g.n;i++)
+	{
+		for (j=0;j<g.n;j++)
+			if (g.edges[i][j]!=INF)
+				printf("%4d",g.edges[i][j]);
+			else
+				printf("%4s","∞");
+		printf("\n");
+	}
 }
 
-void destroyBTree(BTNode *&b){
-    if(b!=NULL){
-        destroyBTree(b->lchild);
-        destroyBTree(b->rchild);
-        free(b);
-    }
+void CreateAdj(AdjGraph *&G,int A[MAXV][MAXV],int n,int e) 
+{
+	int i,j;
+	ArcNode *p;
+	G=(AdjGraph *)malloc(sizeof(AdjGraph));
+	for (i=0;i<n;i++)						
+		G->adjlist[i].firstarc=NULL;
+	for (i=0;i<n;i++)						
+		for (j=n-1;j>=0;j--)
+			if (A[i][j]!=0 && A[i][j]!=INF)	
+			{	p=(ArcNode *)malloc(sizeof(ArcNode));	
+				p->adjvex=j;
+				p->weight=A[i][j];
+				p->nextarc=G->adjlist[i].firstarc;	
+				G->adjlist[i].firstarc=p;
+			}
+	G->n=n; G->e=n;
+}
+void DispAdj(AdjGraph *G)	
+{
+	ArcNode *p;
+	for (int i=0;i<G->n;i++)
+	{
+		p=G->adjlist[i].firstarc;
+		printf("%3d: ",i);
+		while (p!=NULL)
+		{
+			printf("%3d[%d]→",p->adjvex,p->weight);
+			p=p->nextarc;
+		}
+		printf("∧\n");
+	}
+}
+void DestroyAdj(AdjGraph *&G)	
+{
+	ArcNode *pre,*p;
+	for (int i=0;i<G->n;i++)		
+	{	pre=G->adjlist[i].firstarc;	
+		if (pre!=NULL)
+		{	p=pre->nextarc;
+			while (p!=NULL)			
+			{	free(pre);
+				pre=p; p=p->nextarc;
+			}
+			free(pre);
+		}
+	}
+	free(G);						
 }
 
-BTNode* findNode(BTNode *b,ElemType x){
-    BTNode *p;
-    if(b==NULL){
-        return NULL;
-    }else if (b->data==x)
-    {
-        return b;
-    }else{
-        p=findNode(b->lchild,x);
-        if(p!=NULL) return p;
-        else return findNode(b->rchild,x);
-    }
-    
-}
 
-BTNode* lchildNode(BTNode *p){
-    return p->lchild;
-}
-
-BTNode* rchildNode(BTNode *p){
-    return p->rchild;
-}
-
-int getHeight(BTNode *b){
-    int lchild_h,rchild_h;
-    if(b==NULL) return 0;
-    else{
-        lchild_h=getHeight(b->lchild);
-        rchild_h=getHeight(b->rchild);
-        return (lchild_h>rchild_h)?(lchild_h+1):(rchild_h+1);
-    }
-}
-
-void dispBTree(BTNode *b){
-    if(b!=NULL){
-        printf("%c",b->data);
-        if(b->lchild!=NULL||b->rchild!=NULL){
-            printf("(");
-            dispBTree(b->lchild);
-            if(b->rchild!=NULL) printf(",");
-            dispBTree(b->rchild);
-            printf(")");
-        }
-    }
-}
-
-void preOrder(BTNode *b) {
-    if(b!=NULL){
-        printf("%c",b->data);
-        preOrder(b->lchild);
-        preOrder(b->rchild);
-    }
-}
-
-void inOrder(BTNode *b) {
-    if(b!=NULL){
-        inOrder(b->lchild);
-        printf("%c",b->data);
-        inOrder(b->rchild);
-    }
-}
-
-void postOrder(BTNode *b){
-    if(b!=NULL){
-        postOrder(b->lchild);
-        postOrder(b->rchild);
-        printf("%c",b->data);
-    }
-}
-
-void travLevel(BTNode *b) {
-    BTNode *Qu[MaxSize];
-    int front,rear;
-    front=rear=0;
-    if(b!=NULL) printf("%c",b->data);
-    rear++;
-    Qu[rear]=b;
-    while(rear!=front){
-        front=(front+1)%MaxSize;
-        b=Qu[front];
-        if (b->lchild!=NULL){
-            printf("%c",b->lchild->data);
-            rear=(rear+1)%MaxSize;
-            Qu[rear]=b->lchild;
-        }
-        if (b->rchild!=NULL){
-            printf("%c",b->rchild->data);
-            rear=(rear+1)%MaxSize;
-            Qu[rear]=b->rchild;
-        }
-    }
-    printf("\n");
-}
-
-void dfs(BTNode *&b, char x){
-    if (b == NULL) return;
-    if (b->data == x){
-        b->lchild = NULL;
-        b->rchild = NULL;
-        b->data = 'a';
-    }
-    dfs(b->lchild,x);
-    dfs(b->rchild,x);
-}
-
-BTNode* remove(BTNode *&b){
-    if (!b) return NULL;
-    b->lchild=remove(b->lchild);
-    b->rchild=remove(b->rchild);
-    if (!b->lchild && !b->rchild && b->data == 'a') return NULL;
-    return b;
-}
-
-BTNode *getNearestAncestor(BTNode *root,char ch1,char ch2){
-    if (root == NULL || root->data == ch1 || root->data == ch2) return root;
-    BTNode *left = getNearestAncestor(root->lchild,ch1,ch2);
-    BTNode *right = getNearestAncestor(root->rchild,ch1,ch2);
-    if (left == NULL) return right;
-    if (right == NULL) return left;
-    return root;
-}
-
-// TODO 附加题还没看，树的实现结构还没弄懂
-int main(){
-    BTNode *b,*p,*lp,*rp;
-    char str[255]="A(B(D,E(H(J,K(L,M(,N))))),C(F,G(,I)))";
-    createBTree(b,str);
-    dispBTree(b);
-    printf("\n");
-    p=findNode(b,'H');
-    if(p!=NULL){
-        lp=lchildNode(p);
-        if(lp!=NULL) printf("左孩子为%c",lp->data);
-        else printf("无左孩子");
-        rp=rchildNode(p);
-        if(rp!=NULL) printf("右孩子为%c",rp->data);
-        else printf("无右孩子");
-    }
-    printf("\n");
-    printf("%d\n",getHeight(b));
-    printf("---------------第七次实验：寻找最近公共祖先-----------------\n");
-    printf("%c\n",getNearestAncestor(b,'J','M')->data);
-    printf("---------------第八次实验-----------------\n");
-    printf("前序遍历：\n");
-    preOrder(b);
-    printf("\n");
-    printf("中序遍历：\n");
-    inOrder(b);
-    printf("\n");
-    printf("后序遍历：\n");
-    postOrder(b);
-    printf("\n");
-    printf("层次遍历：\n");
-    travLevel(b);
-    printf("删除子树：\n");
-    dfs(b,'C');
-    b = remove(b);
-    if (b == NULL) printf("Tree is empty");
-    else dispBTree(b);
+int main()
+{
+	MatGraph g;
+	AdjGraph *G;
+	int A[MAXV][MAXV]={
+		{0,5,INF,7,INF,INF},
+		{INF,0,4,INF,INF,INF},
+		{8,INF,0,INF,INF,9},
+		{INF,INF,5,0,INF,6},
+		{INF,INF,INF,5,0,INF},
+		{3,INF,INF,INF,1,0}};
+	int n=6,e=10;			
+	CreateMat(g,A,n,e);
+	printf("(1)图G的邻接矩阵:\n");	DispMat(g);
+	CreateAdj(G,A,n,e);
+	printf("(2)图G的邻接表:\n"); DispAdj(G);
+	printf("(3)销毁图G的邻接表\n");
+	DestroyAdj(G);
+	
 }
