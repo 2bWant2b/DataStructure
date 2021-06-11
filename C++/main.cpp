@@ -104,8 +104,6 @@ void quickSort(RecType R[],int s,int t){
         i=partition(R,s,t);
         quickSort(R,s,i-1);
         quickSort(R,i+1,t);
-    }else{
-        printf("Invalid parameter!\n");
     }
 }
 
