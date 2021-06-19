@@ -249,7 +249,19 @@ void deleteX(LinkNode2 *&L,int x){
     }
 }
 
-
+void deleteDuplicate(LinkNode2 *&L){
+    LinkNode2 *slow,*fast;
+    slow=L->next;
+    while(slow!=nullptr){
+        fast=slow;
+        while(fast->next!=nullptr || fast!=NULL){
+            if(fast->next->data==slow->data){
+                fast->next=fast->next->next;
+            }
+            fast=fast->next;
+        }
+    }
+}
 
 int main() {
     LinkNode *list;
@@ -304,6 +316,20 @@ int main() {
     dispList3(xL);
     deleteX(xL,2);
     dispList3(xL);
+    printf("-------------数据结构作业第一题--------------\n");
+    LinkNode2 *YL;
+    initList2(YL);
+    insertElem2(YL,1,2);
+    insertElem2(YL,1,5);
+    insertElem2(YL,1,3);
+    insertElem2(YL,1,3);
+    insertElem2(YL,1,2);
+    insertElem2(YL,1,1);
+    insertElem2(YL,1,2);
+    insertElem2(YL,1,6);
+    dispList3(YL);
+    deleteDuplicate(YL);
+    dispList3(YL);
 }
 
 
